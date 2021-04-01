@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quiz Maker</title>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-auth.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <style>
+        html,
+        body {
+            margin: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="link"></h1>
+    <script>
+        var allQuestions = [];
+        var rightAnswers = [];
+        var wrongAnswers = [];
+        var fieldsCount = 0;
+        const mainRoot = document.createElement('div')
+        const btnRoot = document.createElement('div')
+        // Initialize Cloud Firestore through Firebase
+        firebase.initializeApp({
+            apiKey: 'AIzaSyD7A0QItV-e6sWIh-hVxvf9mIbzSqiSwTk',
+            authDomain: 'learningames-30ee8.firebaseapp.com',
+            projectId: 'learningames-30ee8'
+        });
+
+        firebase.auth().onAuthStateChanged(function (user) {
+            window.user = user; // user is undefined if no user signed in
+            if (user == undefined) {
+                var provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithRedirect(provider);
+            } else {
+                addField()
+                btn = document.createElement("button")
+                btn.innerHTML = "Create test!"
+                btn.id = "linkBtn"
+                btn.addEventListener('click', function () {
+                    postQuestions()
+                });
+                fieldBtn = document.createElement("button")
+                fieldBtn.innerHTML = "Add Question"
+                fieldBtn.id = "fieldBtn"
+                fieldBtn.addEventListener('click', function () {
+                    addField()
+                });
+                document.body.append(fieldBtn, btn)
+                addField()
+            }
+        });
+
+        var db = firebase.firestore();
+        async function addField() {
+            const root = document.createElement('div');
+            var num = document.createElement("h2")
+            var question = document.createElement("INPUT");
+            var rightAnswer = document.createElement("INPUT")
+            var wrongAnswer = document.createElement("INPUT")
+            num.innerHTML = fieldsCount + 1;
+            question.placeholder = "Question"
+            rightAnswer.placeholder = "Correct Answer"
+            wrongAnswer.placeholder = "Wrong Answer"
+            question.id = "questionInput" + fieldsCount;
+            rightAnswer.id = "rightAnswerInput" + fieldsCount;
+            wrongAnswer.id = "wrongAnswerInput" + fieldsCount;
+            question.maxlength = "120"
+            rightAnswer.maxlength = "120"
+            wrongAnswer.maxlength = "120"
+            question.size="40"
+            rightAnswer.size="40"
+            wrongAnswer.size="40"
+            var hr = document.createElement("hr")
+            document.getElementById("fieldBtn").remove()
+            document.getElementById("linkBtn").remove()
+            btn = document.createElement("button")
+            btn.innerHTML = "Create test!"
+            btn.id = "linkBtn"
+            btn.addEventListener('click', function () {
+                postQuestions()
+            });
+            fieldBtn = document.createElement("button")
+            fieldBtn.innerHTML = "Add Question"
+            fieldBtn.id = "fieldBtn"
+            fieldBtn.addEventListener('click', function () {
+                addField()
+            });
+            root.append(num, question, rightAnswer, wrongAnswer, hr)
+            mainRoot.append(root,fieldBtn, btn)
+            document.body.append(mainRoot)
+            fieldsCount++;
+        }
+    </script>
+    <script>
+        async function postQuestions() {
+            for (let i = 0; i < fieldsCount; i++) {
+                allQuestions.push(document.getElementById("questionInput" + i).value);
+                rightAnswers.push(document.getElementById("rightAnswerInput" + i).value);
+                wrongAnswers.push(document.getElementById("wrongAnswerInput" + i).value);
+            }
+
+            const data = { allQuestions, rightAnswers, wrongAnswers };
+            db.collection("questions").add({
+                allQuestions: allQuestions,
+                rightAnswers: rightAnswers,
+                wrongAnswers: wrongAnswers
+            })
+                .then((docRef) => {
+                    console.log("Document written with ID: ", docRef.id);
+                    var answRef = db.collection('answers').doc(docRef.id);
+                    answRef.set({
+                        owner: window.user.email,
+                        answersArr: []
+                    })
+                    document.getElementById("link").innerHTML = "Congratulations your test has been craeted! <br><br> Send this link to your students: " + `https://learningames-30ee8.web.app/snake/games/snake.html?id=${docRef.id}`.link("https://learningames-30ee8.web.app/games/snake/snake.html?id=" + docRef.id);
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                });
+                
+            mainRoot.remove()
+            document.getElementById("linkBtn").remove()
+        }
+    </script>
+
+</body>
+
+</html>

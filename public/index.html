@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Learning Games</title>
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-auth.js"></script>
+</head>
+
+<body>
+  <h1>Learning Games</h1>
+
+  <hr>
+  <div>
+    <h3 id="header">Please login using the button bellow</h3>
+    <img src="" id="profile" style="max-width: 50px;">
+    <br>
+    <div id="btnDiv">
+    <button id="googleSignIn">Log In Using Google</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <script>
+    const googleSignInBtn = document.getElementById("googleSignIn")
+
+    // Initialize Cloud Firestore through Firebase
+    firebase.initializeApp({
+      apiKey: 'AIzaSyD7A0QItV-e6sWIh-hVxvf9mIbzSqiSwTk',
+      authDomain: 'learningames-30ee8.firebaseapp.com',
+      projectId: 'learningames-30ee8'
+    });
+
+    firebase.auth().onAuthStateChanged(function (user) {
+      window.user = user; // user is undefined if no user signed in
+      if (user != undefined) {
+        if(document.getElementById("quizCreate")) document.getElementById("quizCreate").remove()
+        if(document.getElementById("googleSignOut")) document.getElementById("googleSignOut").remove()
+        document.getElementById("header").innerHTML = `Logged in as: ${user.displayName}`
+        document.getElementById("profile").src = user.photoURL
+        var btn = document.createElement('input');
+        btn.type = "button"
+        btn.value = "Create a quiz"
+        btn.id = "quizCreate"
+        btn.addEventListener('click', function () {
+          window.location.href = "https://learningames-30ee8.web.app/input.html"
+        });
+        var btnSignOut = document.createElement('input');
+        btnSignOut.type = "button"
+        btnSignOut.value = "Sign Out"
+        btnSignOut.id = "googleSignOut"
+        btnSignOut.addEventListener('click', function () {
+          signOutWithGoogle()
+        });
+        document.getElementById("googleSignIn").innerHTML = "Sign in using a different account"
+        document.getElementById("btnDiv").append(btnSignOut)
+        document.body.append(btn)
+      } else {
+        if(document.getElementById("quizCreate")) document.getElementById("quizCreate").remove()
+        if(document.getElementById("googleSignOut")) document.getElementById("googleSignOut").remove()
+
+        document.getElementById("header").innerHTML = `Please login using the button bellow`
+        document.getElementById("profile").src = ""
+        document.getElementById("googleSignIn").innerHTML = "Sign In"
+      }
+    });
+
+    function signInWithGoogle() {
+      var user = firebase.auth().currentUser;
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          var provider = new firebase.auth.GoogleAuthProvider();
+          firebase.auth()
+            .signInWithPopup(provider)
+            .then((result) => {
+              /** @type {firebase.auth.OAuthCredential} */
+              var credential = result.credential;
+
+              // This gives you a Google Access Token. You can use it to access the Google API.
+              var token = credential.accessToken;
+              // The signed-in user info.
+              var user = result.user;
+              document.getElementById("header").innerHTML = `Logged in as: ${user.displayName}`
+              // ...
+            }).catch((error) => {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+            });
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+        });
+    }
+
+    function signOutWithGoogle() {
+      firebase.auth().signOut().then(() => {
+        // Sign-out successful.
+      }).catch((error) => {
+        // An error happened.
+      });
+    }
+
+    googleSignInBtn.addEventListener("click", signInWithGoogle)
+  </script>
+</body>

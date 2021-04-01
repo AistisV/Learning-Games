@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teeest</title>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" />
+
+</head>
+
+<body>
+    <script>
+        firebase.initializeApp({
+            apiKey: 'AIzaSyD7A0QItV-e6sWIh-hVxvf9mIbzSqiSwTk',
+            authDomain: 'learningames-30ee8.firebaseapp.com',
+            projectId: 'learningames-30ee8'
+        });
+        var db = firebase.firestore();
+        var cityRef = db.collection('answers').doc('test');
+        firebase.auth().onAuthStateChanged(function (user) {
+            window.user = user; // user is undefined if no user signed in
+            console.log(user)
+            var setWithMerge = cityRef.set({
+            [`${window.user.displayName}`]: { yo: 1, no: 2 }
+        }, { merge: true });
+        });
+    </script>
+</body>
+
+</html>

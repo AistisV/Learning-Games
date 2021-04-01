@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Snake</title>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-auth.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body,
+        html {
+            height: 100%;
+        }
+
+        .text {
+            color: white
+        }
+
+        .bg {
+            /* The image used */
+            background-image: url("snek_wallpaper.jpg");
+
+            /* Full height */
+            height: 100%;
+
+            width: 100%;
+
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        canvas {
+            box-shadow: black 10px 10px 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg">
+
+        <h1 id="alreadyComplete" class="text" style=" margin: 0px;padding: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center; text-align: center;"></h1>
+        <div id="mainDiv"
+            style=" margin: 0px;padding: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center;">
+            <h1 id="question" class="text">Questions Loading</h1>
+            <div style="clear: left;">
+                    <h3 id=answer1 class="text">Answers Loading</h3></div>      
+                    
+            <div style="clear: left;">
+                <h3 id=answer2 class="text">Answers Loading</h3></div>  
+            <canvas id="game" width="400" height="400">
+                <script src="snake.js"></script>
+
+        </div>
+        <h1 id="finish" class="text" style=" margin: 0px;padding: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center; text-align: center;"></h1>
+    </div>
+</body>
+
+</html>

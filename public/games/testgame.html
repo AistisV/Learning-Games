@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>game1</title>
+</head>
+
+<body>
+    <div style="position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -100px;">
+        <h1 style="text-align:center" id="question">Questions Loading</h1>
+        <div style="text-align:center">
+            <button onclick="progress(1)" id="btn1" style="pointer-events: none; cursor: not-allowed;">Questions Loading</button>
+            <button onclick="progress(2)" id="btn2" style="pointer-events: none; cursor: not-allowed;">Questions Loading</button>
+        </div>
+    </div>
+    <script>
+        var databaseEntry = [];
+        var lastQuestion;
+        var correctBtn;
+        var correctAnswers = 0;
+        var wrongAnswers = 0;
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id')
+        async function getQuestions() {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            }
+            const response = await fetch('/getquestions', options);
+            const json = await response.json();
+            databaseEntry = json;
+            document.getElementById("btn1").style = ""
+            document.getElementById("btn2").style = ""
+            progress(0)
+        }
+        getQuestions()
+
+        function progress(btnId) {
+            if (lastQuestion == null) lastQuestion = Math.floor(Math.random() * databaseEntry.allQuestions.length);
+            if(btnId == correctBtn){
+                correctAnswers++;
+                console.log("Correct! Total correct answers: " + correctAnswers)
+            } else{
+                wrongAnswers++;
+                console.log("Wrong! Total wrong answers: " + wrongAnswers)
+            }
+            rndQuestion = Math.floor(Math.random() * databaseEntry.allQuestions.length);
+            correctBtn = Math.floor(Math.random() * 2) + 1;
+            for (let i = 0; i < 50; i++) {
+                if (rndQuestion != lastQuestion) {
+                    lastQuestion = rndQuestion
+                    break;
+                } else {
+                    rndQuestion = Math.floor(Math.random() * databaseEntry.allQuestions.length);
+                }
+            }
+            document.getElementById("question").innerHTML = databaseEntry.allQuestions[rndQuestion]
+            if (correctBtn == 1) {
+                document.getElementById("btn1").textContent = databaseEntry.rightAnswers[rndQuestion]
+                document.getElementById("btn2").textContent = databaseEntry.wrongAnswers[rndQuestion]
+            } else {
+                document.getElementById("btn2").textContent = databaseEntry.rightAnswers[rndQuestion]
+                document.getElementById("btn1").textContent = databaseEntry.wrongAnswers[rndQuestion]
+            }
+            if(btnId == 0){
+                wrongAnswers = 0;
+                correctAnswers = 0;
+                console.clear();
+            }
+        }
+    </script>
+</body>
+
+</html>

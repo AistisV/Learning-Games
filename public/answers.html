@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Learning Snake</title>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-auth.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="mainDiv"></div>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id')
+        let answersArr = []
+        firebase.initializeApp({
+            apiKey: 'AIzaSyD7A0QItV-e6sWIh-hVxvf9mIbzSqiSwTk',
+            authDomain: 'learningames-30ee8.firebaseapp.com',
+            projectId: 'learningames-30ee8'
+        });
+        firebase.auth().onAuthStateChanged(function (user) {
+            window.user = user; // user is undefined if no user signed in
+        });
+        var db = firebase.firestore();
+
+        function makeBoard(owner) {
+            if(owner.localeCompare(window.user.email) != 0) return;
+            console.log(window.user)
+            var docRef = db.collection("answers").doc(id);
+
+            docRef.get().then((doc) => {
+                if (doc.exists) {
+                    let data = doc.data()
+                    // get the reference for the body
+                    var body = document.getElementById("mainDiv");
+
+                    // creates a <table> element and a <tbody> element
+                    var tbl = document.createElement("table");
+                    var tblBody = document.createElement("tbody");
+
+                    // creating all cells
+                    for (var i = 0; i < data.answersArr.length; i++) {
+                        // creates a table row
+                        var row = document.createElement("tr");
+
+                        for (var j = 0; j < 4; j++) {
+                            // Create a <td> element and a text node, make the text
+                            // node the contents of the <td>, and put the <td> at
+                            // the end of the table row
+                            var cellText;
+                            if (j == 0) {
+                                cellText = document.createTextNode("Name: " + data.answersArr[i].name);
+                            } else if (j == 1) {
+                                cellText = document.createTextNode("E-mail: " + data.answersArr[i].mail);
+                            } else if (j == 2) {
+                                cellText = document.createTextNode("Correct Answers: " + data.answersArr[i].correctAnswers);
+                            } else {
+                                cellText = document.createTextNode("Wrong Answers: " + data.answersArr[i].wrongAnswers)
+                            }
+                            var cell = document.createElement("td");
+                            cell.appendChild(cellText);
+                            row.appendChild(cell);
+                        }
+
+                        // add the row to the end of the table body
+                        tblBody.appendChild(row);
+                    }
+
+                    // put the <tbody> in the <table>
+                    tbl.appendChild(tblBody);
+                    // appends <table> into <body>
+                    body.appendChild(tbl);
+                    // sets the border attribute of tbl to 2;
+                    tbl.setAttribute("border", "2");
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
+
+        db.collection("answers").doc(id)
+            .onSnapshot((doc) => {
+                $('#mainDiv').empty();
+                makeBoard(doc.data().owner)
+            });
+    </script>
+</body>
+
+</html>
