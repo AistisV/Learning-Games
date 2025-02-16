@@ -8,13 +8,13 @@ import Home from './Components/Home/Home'
 import firebase from "firebase/app";
 
 firebase.initializeApp({
-  apiKey: "AIzaSyD7A0QItV-e6sWIh-hVxvf9mIbzSqiSwTk",
+  apiKey: "",
   authDomain: "learningames-30ee8.firebaseapp.com",
-  databaseURL: "https://learningames-30ee8-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL: "",
   projectId: "learningames-30ee8",
   storageBucket: "learningames-30ee8.appspot.com",
-  messagingSenderId: "458085932103",
-  appId: "1:458085932103:web:5cf20caeda2145a76e2562",
+  messagingSenderId: "",
+  appId: "",
   measurementId: "G-Y29RLVM4XM"
 });
 
